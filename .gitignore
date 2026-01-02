@@ -6,3 +6,4 @@
 *.xlsb
 ML_Project.egg-info
 __pycache__
+logs
