@@ -1,10 +1,10 @@
 import sys # Importa o sistema para acessar informações do interpretador
-
+from src.logger import logging # Importa a função loggins do arquivo logger.py. 
 def error_message_detail(error, error_detail:sys):
     """
     Função auxiliar para formatar a mensagem de erro detalhada.
     """
-    # sys.exc_info() retorna (tipo, valor, traceback). Usamos _ para descartar o que não queremos.
+    # sys.exc_info() retorna (tipo, valor, traceback). Usamos _ para descartar o que não queremos. Traceback é um objeto que contém informações sobre o local onde o erro ocorreu.
     _, _, exc_tb = error_detail.exc_info()
 
     # Navega nas camadas do objeto de traceback para extrair o nome do script (arquivo)
