@@ -20,10 +20,10 @@ class DataIngestion: #Classe que vai fazer a ingestão de dados.
         self.ingestion_config = DataIngestionConfig() #Cria uma instância da configuração (DataIngestionConfig), para que o código saiba onde salvar os arquivos.
 
 
-    def initiate_data_ingestion(): 
+    def initiate_data_ingestion(self): 
         logging.info("Entered the data ingestion method or component") #Registra no log que o processo de ingestão começou. Útil para debug.
         try:
-            df = pd.read_csv('notebook\data\stud.csv') #Leitura do arquivo CSV.
+            df = pd.read_csv('notebook/data/stud.csv') #Leitura do arquivo CSV.
 
             logging.info("Read the dataset as dataframe") #Registra no log que o dataset foi lido e convertido para um DataFrame.
 
