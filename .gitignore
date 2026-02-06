@@ -7,5 +7,7 @@
 ML_Project.egg-info
 __pycache__
 logs
-.artifacts
+artifacts
 *catboost_info
+*.pkl
+*.pt

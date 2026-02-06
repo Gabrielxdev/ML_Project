@@ -7,6 +7,12 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split 
 from dataclasses import dataclass  # Uma ferramenta do Python que facilita a criação de classes que servem apenas para guardar dados (configurações), sem precisar escrever métodos como __init__.
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
+
+from src.components.model_trainer import ModelTrainer 
+from src.components.model_trainer import ModelTrainerConfig 
+
 
 @dataclass #Um decorador que cria automaticamente o método construtor (__init__) para a classe abaixo.
 
@@ -46,6 +52,11 @@ class DataIngestion: #Classe que vai fazer a ingestão de dados.
             raise CustomException(e, sys)
 if __name__ == "__main__": #Ela pergunta: "Este arquivo (data_ingestion.py) está sendo executado diretamente pelo terminal (ex: python data_ingestion.py)?"
     obj=DataIngestion() #Se sim, ele cria uma instância da classe DataIngestion.
-    obj.initiate_data_ingestion() #E executa o método initiate_data_ingestion().
+    train_data, test_data = obj.initiate_data_ingestion() #E executa o método initiate_data_ingestion().
 
     #conclusão: Esse método vai ler o dataset original, dividir em treino/teste e salvar os arquivos .csv na pasta artifacts.
+    data_transformation = DataTransformation()
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data, test_data)
+
+    modelTrainer = ModelTrainer()
+    print(modelTrainer.initiate_model_trainer(train_arr, test_arr))

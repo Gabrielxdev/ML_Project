@@ -2,19 +2,21 @@ import sys # Importa o sistema para acessar informações do interpretador
 from dataclasses import dataclass 
 import numpy as np 
 import pandas as pd 
-from sklearn.preprocessing import ColumnTransformer 
+from sklearn.compose import ColumnTransformer 
 from sklearn.pipeline import Pipeline 
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from src.exception import CustomException 
 from src.logger import logging 
+from sklearn.impute import SimpleImputer #importa o SimpleImputer para substituir valores faltantes
 import os 
+from src.utils import save_object    
 
 @dataclass #automatiza metodos criados em classes que servem apenas para guardar dados
 class DataTransformationConfig:
     preprocessor_obj_file_path = os.path.join("artifacts", "preprocessor.pkl") 
 
 class DataTransformation: # é o molde que vai transformar os dados 
-    def __init__(self):
+    def __init__(self): #inicializa a classe
         self.data_transformation_config = DataTransformationConfig() #cria uma instância da configuração (DataTransformationConfig), para que o código saiba onde salvar os arquivos.
 
     def get_data_transformer_object(self):
@@ -39,7 +41,7 @@ class DataTransformation: # é o molde que vai transformar os dados
                 steps = [
                     ("imputer", SimpleImputer(strategy="most_frequent")), # Substitui valores faltantes pela moda
                     ("one_hot_encoder", OneHotEncoder()), # Codifica as variáveis categóricas
-                    ("scaler", StandardScaler()) # Escala os dados para ter média 0 e desvio padrão 1
+                    ("scaler", StandardScaler(with_mean=False)) # Escala os dados para ter média 0 e desvio padrão 1
                 ]
             )
             logging.info("Numerical columns standard scaling completed")
@@ -67,7 +69,7 @@ class DataTransformation: # é o molde que vai transformar os dados
 
             target_column_name="math_score" #define o nome da coluna alvo.
 
-            input_feature_train_df = train_df.drop(columns=[target_columns_name], axis=1)
+            input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
             target_feature_train_df = train_df[target_column_name]
 
             input_feature_test_df = test_df.drop(columns=[target_column_name], axis=1)
@@ -75,8 +77,8 @@ class DataTransformation: # é o molde que vai transformar os dados
 
             logging.info(f"Applying preprocessing object on training and test data")
 
-            input_feature_train_arr =  preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
+            input_feature_train_arr =  preprocessing_obj.fit_transform(input_feature_train_df)#fit_transform aprende com os dados de treino e transforma
+            input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)#transform aplica o que foi aprendido com os dados de treino nos dados de teste
 
             train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)] #concatena os arrays de entrada e alvo
             test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)] #concatena os arrays de entrada e alvo
@@ -84,15 +86,15 @@ class DataTransformation: # é o molde que vai transformar os dados
             logging.info(f"Saved preprocessing object.")
 
             save_object(
-                file_path = self.data_transformation_config.preprocessor_obj_file_path,
-                obj = preprocessing_obj
+                file_path = self.data_transformation_config.preprocessor_obj_file_path, #caminho onde o objeto será salvo
+                obj = preprocessing_obj #o objeto que será salvo
             )
 
             return (
                 train_arr, 
                 test_arr, 
-                self.data_transformation_config.preprocessor_obj_file_path
+                self.data_transformation_config.preprocessor_obj_file_path 
             )
 
-        except:
-            pass #se der erro, ele passa.
+        except Exception as e:
+            raise CustomException(e, sys)
